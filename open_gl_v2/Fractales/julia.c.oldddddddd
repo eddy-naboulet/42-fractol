@@ -1,0 +1,71 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   julia.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: enaboule <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2016/04/21 11:21:09 by enaboule          #+#    #+#             */
+/*   Updated: 2016/04/21 11:21:11 by enaboule         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../fractol.h"
+
+t_fctl		*init_julia(t_fctl *fctl)
+{
+	fctl->x1 = -1.5;
+	fctl->x2 = 1.5;
+	fctl->y1 = -1.2;
+	fctl->y2 = 1.2;
+	fctl->image_x = 800;
+	fctl->image_y = 800;
+	fctl->zoom_x = fctl->image_x / (fctl->x2 - fctl->x1);
+	fctl->zoom_y = fctl->image_y / (fctl->y2 - fctl->y1);
+	fctl->imax = 50;
+	fctl->tmp_r = -0.8;
+	fctl->tmp_i = -0.4;
+	fctl->c_r = 0;
+	fctl->c_i = 0;
+	fctl->z_r = 0;
+	fctl->z_i = 0;
+	return (fctl);
+}
+
+void 		ft_julia(t_fctl *fctl)
+{
+	double	x;
+	double	y;
+	double	tmp;
+	double	z_r2;
+	double	z_i2;
+	double	tmp_z_r;
+	double	tmp_z_i;
+	int 	i;
+
+	y = 0;
+
+	x = -1;
+	z_r2 = (fctl->x1 - fctl->image_x) / (fctl->zoom_x * fctl->image_x);
+	z_i2 = (fctl->y1 - fctl->image_y) / (fctl->zoom_y * fctl->image_y);
+	i = 0;
+	tmp = 1.0;
+	while (++x < fctl->image_x)
+	{
+		y = -1;
+		while (++y < fctl->image_y)
+		{
+			while (tmp > 0.000001 && ++i < fctl->imax)
+			{
+				tmp_z_r = z_r2;
+				tmp_z_i = z_i2;
+				tmp = (z_r2 * z_r2 + z_i2 * z_i2) * (z_r2 * z_r2 + z_i2 * z_i2);
+				z_r2 = (2 * z_r2 * tmp + z_r2 * z_r2 - z_i2 * z_i2) / (3.0 * tmp);
+				z_i2 = (2 * z_i2 * (tmp - tmp_z_r)) / (3.0 * tmp);
+				tmp = (z_r2 - tmp_z_r) * (z_r2 - tmp_z_r) + (z_i2 - tmp_z_i) * (z_i2 - tmp_z_i);
+				ft_put_pixel(fctl, x, y);
+				tmp--;
+			}
+		}
+	}
+}
